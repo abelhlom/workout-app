@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Program</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0f11;
+  --surface: #16181c;
+  --surface2: #1e2126;
+  --border: #2a2d34;
+  --text: #f0f1f3;
+  --muted: #7a7f8a;
+  --accent: #d4f04a;
+  --accent2: #4af0c4;
+  --blue: #4a9af0;
+  --amber: #f0a94a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+
+.header { padding: 2.5rem 2rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; }
+.header-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 3rem; line-height: 1; }
+.header-title span { color: var(--accent); }
+.header-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 5px; }
+.badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge { font-size: 11px; padding: 4px 10px; border-radius: 99px; font-weight: 600; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.05em; }
+.badge-green { background: #1a2e10; color: var(--accent); border: 1px solid #2a4a18; }
+.badge-teal { background: #0d2b26; color: var(--accent2); border: 1px solid #1a4a40; }
+.badge-amber { background: #2b1f0a; color: var(--amber); border: 1px solid #4a3510; }
+
+.week-grid { display: grid; grid-template-columns: repeat(5, 1fr); border-bottom: 1px solid var(--border); }
+.day-tab { padding: 1rem; cursor: pointer; border-right: 1px solid var(--border); color: var(--muted); transition: all 0.15s; position: relative; }
+.day-tab:last-child { border-right: none; }
+.day-tab.active { color: var(--text); background: var(--surface); }
+.day-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--accent); }
+.day-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+.day-name { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+.day-tag { font-size: 10px; color: var(--muted); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+.day-tab.active .day-tag { color: var(--accent); }
+
+.content { display: none; padding: 2rem; }
+.content.active { display: block; }
+
+.muscle-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+.chip { font-size: 11px; padding: 3px 10px; border-radius: 99px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: 0.05em; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+.chip.push { background: #1a2e10; color: var(--accent); border-color: #2a4a18; }
+.chip.pull { background: #0d2b26; color: var(--accent2); border-color: #1a4a40; }
+.chip.legs { background: #2b1f0a; color: var(--amber); border-color: #4a3510; }
+
+.section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border); }
+.section-label.push-label { color: #8ab840; border-color: #2a4a18; }
+.section-label.pull-label { color: #40b890; border-color: #1a4a40; }
+.section-label.sub { font-size: 0.65rem; color: #555b66; border-color: #1e2228; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+
+.exercise-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 1.25rem; }
+.exercise { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1.25rem; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 1rem; }
+.exercise.compound { border-left: 3px solid var(--accent); }
+.exercise.compound-pull { border-left: 3px solid var(--accent2); }
+.ex-name { font-family: 'Barlow Condensed', sans-serif; font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.ex-yours { display: inline-block; font-size: 9px; background: #1e2d10; color: #8ab840; border: 1px solid #2a4018; border-radius: 4px; padding: 1px 5px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.05em; margin-left: 6px; vertical-align: middle; }
+.ex-new { display: inline-block; font-size: 9px; background: #1a1f2b; color: var(--blue); border: 1px solid #253050; border-radius: 4px; padding: 1px 5px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 0.05em; margin-left: 6px; vertical-align: middle; }
+.ex-note { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.ex-note em { color: #a0a8b8; font-style: normal; }
+.ex-scheme { text-align: right; white-space: nowrap; }
+.ex-sets { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.ex-rest { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.erg-block { background: var(--surface2); border: 1px solid var(--border); border-left: 3px solid var(--accent2); border-radius: 8px; padding: 1.1rem 1.25rem; margin-bottom: 1.5rem; }
+.erg-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; color: var(--accent2); margin-bottom: 4px; }
+.erg-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.erg-desc strong { color: var(--text); font-weight: 500; }
+
+.tip { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.25rem; font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 0.75rem; }
+.tip strong { color: var(--accent); font-weight: 500; }
+
+.divider { height: 1px; background: var(--border); margin: 1.5rem 0; }
+
+.targets { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 1.5rem 2rem; border-top: 1px solid var(--border); }
+.target { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.85rem 1rem; }
+.target-lift { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.target-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+.target-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+@media (max-width: 680px) {
+  .week-grid { grid-template-columns: 1fr 1fr; }
+  .targets { grid-template-columns: 1fr 1fr; }
+  .header-title { font-size: 2.2rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">YOUR <span>PROGRAM</span></div>
+    <div class="header-sub">Your exercises · 3 sets · 2× frequency · Rowing foundation</div>
+  </div>
+  <div class="badges">
+    <span class="badge badge-green">Your exercises kept</span>
+    <span class="badge badge-teal">Same upper Mon + Thu</span>
+    <span class="badge badge-amber">Legs added</span>
+  </div>
+</div>
+
+<div class="week-grid">
+  <div class="day-tab active" onclick="showDay(0)">
+    <div class="day-name">Monday</div>
+    <div class="day-tag">Upper · ~90 min</div>
+  </div>
+  <div class="day-tab" onclick="showDay(1)">
+    <div class="day-name">Tuesday</div>
+    <div class="day-tag">Lower strength</div>
+  </div>
+  <div class="day-tab" onclick="showDay(2)">
+    <div class="day-name">Wednesday</div>
+    <div class="day-tag">Erg + core</div>
+  </div>
+  <div class="day-tab" onclick="showDay(3)">
+    <div class="day-name">Thursday</div>
+    <div class="day-tag">Upper · ~90 min</div>
+  </div>
+  <div class="day-tab" onclick="showDay(4)">
+    <div class="day-name">Friday</div>
+    <div class="day-tag">Lower + erg</div>
+  </div>
+</div>
+
+<!-- MONDAY / THURSDAY — same upper -->
+<div class="content active" id="day-0">
+  <div class="muscle-chips">
+    <span class="chip push">Chest</span>
+    <span class="chip push">Shoulders</span>
+    <span class="chip push">Triceps</span>
+    <span class="chip pull">Back</span>
+    <span class="chip pull">Biceps</span>
+  </div>
+
+  <div class="section-label push-label">Push — Chest → Shoulders → Triceps</div>
+  <div class="section-label sub">Chest</div>
+  <div class="exercise-list">
+    <div class="exercise compound">
+      <div>
+        <div class="ex-name">Barbell Bench Press <span class="ex-new">NEW</span></div>
+        <div class="ex-note">Your strength foundation. Heavy and controlled. <em>Add 5 lbs when all 3 sets are clean.</em></div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 5</div><div class="ex-rest">3 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Incline DB Press <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 45 lbs. Hit 3×8 clean before bumping to 50.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">2 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Pec Deck <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 110 lbs. Full stretch at bottom, squeeze hard at top.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="section-label sub">Shoulders</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Shoulder Press DB <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 35 lbs. You hit 35×7 — get 3×8 clean then move to 37.5.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Lateral Raise DB <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 22.5 lbs. Slow eccentric on the way down — no swinging.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="section-label sub">Triceps</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div>
+        <div class="ex-name">V Tricep Pushdown <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 47.5 lbs. You were getting 9 reps — bump to 52.5 now.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Overhead V Tricep <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 35–40 lbs. Hit 3×10 at 35 before using 40 for all sets.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label pull-label">Pull — Back → Biceps</div>
+  <div class="section-label sub">Back</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Lat Pulldown <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 120 lbs (55 at other gym). Full stretch at top, pull to upper chest.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Lat Grip Row <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 70–85 lbs. Drive elbows back, squeeze shoulder blades at the end.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Supinated Grip Row <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 60 lbs. Underhand grip — hits lower lats and biceps. You noted bumping to 65.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="section-label sub">Biceps</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Hammer Curl DB <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 25 lbs. You noted bumping to 27.5 — do it now that you're adding a set.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Bicep Curl DB Standing <span class="ex-yours">YOURS</span></div>
+        <div class="ex-note">Current: 27.5 lbs. Full supination at the top. No swinging.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="tip"><strong>This is the exact same session on Thursday.</strong> Seeing the same workout twice weekly is what drives 2× frequency gains. Your weights from your notes are already plugged in — where you wrote "maybe bump," it's bumped.</div>
+</div>
+
+<!-- TUESDAY -->
+<div class="content" id="day-1">
+  <div class="muscle-chips">
+    <span class="chip legs">Quads</span><span class="chip legs">Hamstrings</span><span class="chip legs">Glutes</span><span class="chip legs">Core</span>
+  </div>
+  <div class="section-label" style="color: var(--amber); border-color: #4a3510;">Lower A — Strength · ~65 min</div>
+  <div class="exercise-list">
+    <div class="exercise compound">
+      <div>
+        <div class="ex-name">Back Squat <span class="ex-new">NEW</span></div>
+        <div class="ex-note">Your single most important lift for rowing. 60% of power in a stroke comes from legs. <em>Start light — add 5 lbs every week without fail.</em></div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 5</div><div class="ex-rest">3 min rest</div></div>
+    </div>
+    <div class="exercise compound">
+      <div>
+        <div class="ex-name">Conventional Deadlift <span class="ex-new">NEW</span></div>
+        <div class="ex-note">Closest gym lift to the rowing stroke. Flat back, drive through heels. <em>Add 5–10 lbs weekly.</em></div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 4</div><div class="ex-rest">3 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Romanian Deadlift <span class="ex-new">NEW</span></div>
+        <div class="ex-note">3 second eccentric down. Builds hamstrings — the most undertrained muscle in most athletes.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">2 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Bulgarian Split Squat <span class="ex-new">NEW</span></div>
+        <div class="ex-note">Rear foot on bench, dumbbells in hands. Fixes left/right power imbalances critical for rowing.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8 each</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div>
+        <div class="ex-name">Plank <span class="ex-new">NEW</span></div>
+        <div class="ex-note">Core stability transfers directly to power on the erg. Hold until form breaks — don't cheat the time.</div>
+      </div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 45 sec</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+  <div class="tip"><strong>Pick a starting weight you could do for 8 reps but only do 5.</strong> Feels too easy at first — that's correct. Adding 5 lbs a week means in 20 weeks you're squatting 100 lbs more than you started. That's the whole game.</div>
+</div>
+
+<!-- WEDNESDAY -->
+<div class="content" id="day-2">
+  <div class="muscle-chips">
+    <span class="chip pull">Aerobic base</span><span class="chip legs">Core</span>
+  </div>
+  <div class="section-label" style="color: var(--accent2); border-color: #1a4a40;">Wednesday — Erg + Core · ~60 min</div>
+  <div class="erg-block">
+    <div class="erg-title">Erg — steady state</div>
+    <div class="erg-desc"><strong>40–45 min at rate 18–20 spm.</strong> Easy enough to hold a full conversation. This builds the aerobic base that drops your 2k time. Don't go harder — that's counterproductive on this day. As weeks pass, your split times will naturally fall at the same easy effort.</div>
+  </div>
+  <div class="section-label sub">Core circuit — 3 rounds</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div><div class="ex-name">Pallof Press</div><div class="ex-note">Cable or band. Anti-rotation core — directly mimics the stability needed at the catch.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 12 each</div><div class="ex-rest">—</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Ab Wheel Rollout</div><div class="ex-note">From knees. Don't let lower back arch. Work toward standing rollouts over months.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">—</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Hollow Body Hold</div><div class="ex-note">Lower back pressed flat to floor. This is the exact core position held through every rowing stroke.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 30 sec</div><div class="ex-rest">60 sec between rounds</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- THURSDAY — same as Monday -->
+<div class="content" id="day-3">
+  <div class="muscle-chips">
+    <span class="chip push">Chest</span>
+    <span class="chip push">Shoulders</span>
+    <span class="chip push">Triceps</span>
+    <span class="chip pull">Back</span>
+    <span class="chip pull">Biceps</span>
+  </div>
+
+  <div class="section-label push-label">Push — Chest → Shoulders → Triceps</div>
+  <div class="section-label sub">Chest</div>
+  <div class="exercise-list">
+    <div class="exercise compound">
+      <div><div class="ex-name">Barbell Bench Press <span class="ex-new">NEW</span></div><div class="ex-note">Same weight as Monday. If Monday felt solid, add 5 lbs next week.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 5</div><div class="ex-rest">3 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Incline DB Press <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday. Consistency between sessions is the point.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">2 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Pec Deck <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+  </div>
+  <div class="section-label sub">Shoulders</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div><div class="ex-name">Shoulder Press DB <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Lateral Raise DB <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+  <div class="section-label sub">Triceps</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div><div class="ex-name">V Tricep Pushdown <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Overhead V Tricep <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label pull-label">Pull — Back → Biceps</div>
+  <div class="section-label sub">Back</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div><div class="ex-name">Lat Pulldown <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Lat Grip Row <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Supinated Grip Row <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 8</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+  </div>
+  <div class="section-label sub">Biceps</div>
+  <div class="exercise-list">
+    <div class="exercise">
+      <div><div class="ex-name">Hammer Curl DB <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Bicep Curl DB Standing <span class="ex-yours">YOURS</span></div><div class="ex-note">Same weight as Monday.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+  <div class="tip"><strong>Identical to Monday by design.</strong> The second hit in the week is what locks in the muscle stimulus and drives growth. Keep the weights the same — only go up when Monday felt easy.</div>
+</div>
+
+<!-- FRIDAY -->
+<div class="content" id="day-4">
+  <div class="muscle-chips">
+    <span class="chip legs">Quads</span><span class="chip legs">Hamstrings</span><span class="chip legs">Glutes</span><span class="chip pull">Aerobic</span>
+  </div>
+  <div class="section-label" style="color: var(--amber); border-color: #4a3510;">Lower B — Hypertrophy + Erg · ~80 min</div>
+  <div class="exercise-list">
+    <div class="exercise compound">
+      <div><div class="ex-name">Leg Press <span class="ex-new">NEW</span></div><div class="ex-note">High foot placement, heavy. Builds leg volume without crushing your lower back after Tuesday deadlifts.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10</div><div class="ex-rest">2 min rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Walking Lunges <span class="ex-new">NEW</span></div><div class="ex-note">Dumbbells in hands, long stride. Fixes single-leg imbalances — critical for even power through the drive.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 10 each</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Leg Curl Machine <span class="ex-new">NEW</span></div><div class="ex-note">3 second eccentric. Hamstrings are undertrained in most athletes — this fixes it.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 12</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Goblet Squat <span class="ex-new">NEW</span></div><div class="ex-note">Heavy dumbbell, upright torso. Builds the posture needed to hold the catch position in a boat.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 12</div><div class="ex-rest">90 sec rest</div></div>
+    </div>
+    <div class="exercise">
+      <div><div class="ex-name">Calf Raises <span class="ex-new">NEW</span></div><div class="ex-note">Slow and controlled. Prevents ankle and knee injuries from rowing's constant lower leg loading.</div></div>
+      <div class="ex-scheme"><div class="ex-sets">3 × 15</div><div class="ex-rest">60 sec rest</div></div>
+    </div>
+  </div>
+  <div class="erg-block">
+    <div class="erg-title">Erg intervals — after lifting</div>
+    <div class="erg-desc"><strong>6 × 500m, 2 min rest between each.</strong> Rate 24–26 spm at 85–90% effort. Record every split — watch them drop over weeks. This is the session that gets you recruited.</div>
+  </div>
+</div>
+
+<div class="targets">
+  <div class="target"><div class="target-lift">Back squat</div><div class="target-val">275 lbs</div><div class="target-sub">1.5× bodyweight</div></div>
+  <div class="target"><div class="target-lift">Deadlift</div><div class="target-val">365 lbs</div><div class="target-sub">2× bodyweight</div></div>
+  <div class="target"><div class="target-lift">Bench press</div><div class="target-val">185 lbs</div><div class="target-sub">1× bodyweight</div></div>
+  <div class="target"><div class="target-lift">Pull-ups</div><div class="target-val">15 reps</div><div class="target-sub">clean unassisted</div></div>
+  <div class="target"><div class="target-lift">2k erg</div><div class="target-val">sub 6:45</div><div class="target-sub">recruitment target</div></div>
+</div>
+
+<script>
+function showDay(idx) {
+  document.querySelectorAll('.day-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.content').forEach((c,i) => c.classList.toggle('active', i===idx));
+}
+</script>
+</body>
+</html>
